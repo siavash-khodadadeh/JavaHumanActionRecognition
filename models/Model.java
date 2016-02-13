@@ -1,6 +1,6 @@
 package models;
 
-import har.Classes;
+import har.Labels;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,9 +12,9 @@ import java.io.Serializable;
 import java.util.TreeMap;
 
 public abstract class Model implements Serializable {
-    public abstract void train(TreeMap<Integer, Classes> trainSet);
+    public abstract void train(TreeMap<Integer, Labels> trainSet);
 
-    public abstract Classes test(int videoNumber);
+    public abstract Labels test(int videoNumber);
 
     public abstract void save(String address);
 

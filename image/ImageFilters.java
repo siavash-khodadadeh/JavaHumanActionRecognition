@@ -1,8 +1,8 @@
 package image;
 
-import har.Classes;
+import har.Labels;
 import har.DrawVideosDataPoint;
-import io.ReadData;
+import io.Database;
 
 import java.io.IOException;
 
@@ -99,7 +99,7 @@ public class ImageFilters {
 
     public static void main(String[] args) {
         try {
-            Matrix[] m = ReadData.readAWordOfVideo(Classes.BOXING, 1, 123);
+            Matrix[] m = Database.readAWordOfVideo(Labels.BOXING, 1, 123);
             Matrix[] t = sobel3D(m);
             DrawVideosDataPoint.draw(m, 3);
             DrawVideosDataPoint.draw(t, 3);

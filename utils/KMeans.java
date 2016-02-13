@@ -16,7 +16,7 @@ public class KMeans implements Serializable {
     static String LOGGER_ADDRESS = "logs/kmeans/";
     static int MIN_VALUE = -1000;
     static int MAX_VALUE = 1000;
-    static double THRESHOLD = 2000;
+    static double THRESHOLD = 100;
     private int n;
     private int m;
     private int k;

@@ -1,6 +1,6 @@
 package har;
 
-public enum Classes {
+public enum Labels {
     BOXING("boxing", "boxing/", 100), HANDCLAPPING("handclapping",
             "handclapping/", 99), HANDWAVING("handwaving", "handwaving/", 100), RUNNING(
             "running", "running/", 100), JOGGING("jogging", "jogging/", 100), WALKING(
@@ -10,7 +10,7 @@ public enum Classes {
     private String address;
     private int numberOfVideos;
 
-    Classes(String name, String address, int numberOfVideos) {
+    Labels(String name, String address, int numberOfVideos) {
         this.name = name;
         this.address = address;
         this.numberOfVideos = numberOfVideos;
@@ -26,5 +26,12 @@ public enum Classes {
 
     public int getNumberOfVideos() {
         return this.numberOfVideos;
+    }
+
+    public static void main(String[] args) {
+        for (Labels c : Labels.values()) {
+            System.out.println(c);
+            System.out.println(c.ordinal());
+        }
     }
 }

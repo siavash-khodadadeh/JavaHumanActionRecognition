@@ -1,6 +1,6 @@
 package evaluations;
 
-import har.Classes;
+import har.Labels;
 
 import java.util.TreeMap;
 
@@ -13,7 +13,7 @@ public class SimpleEvaluation extends Evaluation {
     }
 
     @Override
-    public double evaluate(TreeMap<Integer, Classes> testSet) {
+    public double evaluate(TreeMap<Integer, Labels> testSet) {
         int trueGuesses = 0;
         for (int i : testSet.keySet()) {
             if (model.test(i) == testSet.get(i)) {

@@ -1,11 +1,11 @@
 package utils;
 
 import Jama.Matrix;
-import har.Classes;
+import har.Labels;
 
 public class Utils {
-    public static Classes getVideoClass(int videoNumber) {
-        for (Classes c : Classes.values()) {
+    public static Labels getVideoClass(int videoNumber) {
+        for (Labels c : Labels.values()) {
             if (videoNumber > c.getNumberOfVideos()) {
                 videoNumber -= c.getNumberOfVideos();
             } else {
@@ -16,7 +16,7 @@ public class Utils {
     }
 
     public static int getVideoNumberInClass(int videoNumber) {
-        for (Classes c : Classes.values()) {
+        for (Labels c : Labels.values()) {
             if (videoNumber > c.getNumberOfVideos()) {
                 videoNumber -= c.getNumberOfVideos();
             } else {

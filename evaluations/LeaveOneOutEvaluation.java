@@ -2,8 +2,8 @@ package evaluations;
 
 import java.util.TreeMap;
 
-import har.Classes;
-import io.ReadData;
+import har.Labels;
+import io.Database;
 import models.Model;
 
 public class LeaveOneOutEvaluation extends SimpleEvaluation {
@@ -12,19 +12,20 @@ public class LeaveOneOutEvaluation extends SimpleEvaluation {
     public LeaveOneOutEvaluation(Model model) {
         super(model);
         accuracy = new double[25];
-        for (int personNumber = 1; personNumber <= 1; personNumber++) {
-            TreeMap<Integer, Classes>[] datasets = ReadData
+        for (int personNumber = 1; personNumber <= 25; personNumber++) {
+            TreeMap<Integer, Labels>[] datasets = Database
                     .leaveOneOutSelect(personNumber);
-            TreeMap<Integer, Classes> trainSet = datasets[0];
-            TreeMap<Integer, Classes> testSet = datasets[1];
+            TreeMap<Integer, Labels> trainSet = datasets[0];
+            TreeMap<Integer, Labels> testSet = datasets[1];
             model.train(trainSet);
+            model.save("logs/models/" + (personNumber - 1) + ".model");
             accuracy[personNumber - 1] = this.evaluate(testSet);
         }
     }
 
     public double meanAccuracy() {
         double meanAccuracy = 0;
-        for (double d: accuracy) {
+        for (double d : accuracy) {
             meanAccuracy += d;
         }
         meanAccuracy = meanAccuracy / accuracy.length;

@@ -1,7 +1,7 @@
 package har;
 
 import image.Artist;
-import io.ReadData;
+import io.Database;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -11,7 +11,7 @@ import Jama.Matrix;
 
 public class DrawVideosDataPoint {
     public static void main(String[] args) {
-        Classes videoClass = Classes.BOXING;
+        Labels videoClass = Labels.BOXING;
         int videoNumber = 2;
         int wordNumber = 2;
         int frameNumber = 10;
@@ -23,10 +23,10 @@ public class DrawVideosDataPoint {
 
     }
 
-    public static void draw(Classes videoClass, int videoNumber,
+    public static void draw(Labels videoClass, int videoNumber,
             int wordNumber, int frameNumber) throws FileNotFoundException,
             IOException {
-        Matrix[] word = ReadData.readAWordOfVideo(videoClass, videoNumber,
+        Matrix[] word = Database.readAWordOfVideo(videoClass, videoNumber,
                 wordNumber);
         draw(word, frameNumber - 1);
     }

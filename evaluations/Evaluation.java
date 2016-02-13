@@ -1,6 +1,6 @@
 package evaluations;
 
-import har.Classes;
+import har.Labels;
 
 import java.util.TreeMap;
 
@@ -13,5 +13,5 @@ public abstract class Evaluation {
         this.model = model;
     }
 
-    public abstract double evaluate(TreeMap<Integer, Classes> testSet);
+    public abstract double evaluate(TreeMap<Integer, Labels> testSet);
 }

@@ -1,6 +1,6 @@
 package utils;
 
-import har.Classes;
+import har.Labels;
 import har.Constants;
 
 import java.io.BufferedOutputStream;
@@ -62,7 +62,7 @@ public class SVM implements Serializable {
         svmParameter.nu = 0.5;
         svmParameter.C = 1;
         svmParameter.svm_type = svm_parameter.C_SVC;
-        svmParameter.kernel_type = svm_parameter.RBF;
+        svmParameter.kernel_type = svm_parameter.LINEAR;
         svmParameter.cache_size = 20000;
         svmParameter.eps = 0.001;
         logger.println("probability: " + svmParameter.probability);
@@ -77,7 +77,7 @@ public class SVM implements Serializable {
         this.svmModel = svm.svm_train(svmProblem, svmParameter);
     }
 
-    public Classes evaluate(Matrix m) {
+    public Labels evaluate(Matrix m) {
         svm_node[] nodes = new svm_node[m.getColumnDimension()];
         for (int j = 0; j < m.getColumnDimension(); j++) {
             svm_node node = new svm_node();
@@ -87,7 +87,7 @@ public class SVM implements Serializable {
         }
         int label = (int) svm.svm_predict(svmModel, nodes);
         logger.println(label);
-        return Classes.values()[label];
+        return Labels.values()[label];
     }
 
     public void closeLogger() {

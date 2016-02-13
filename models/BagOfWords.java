@@ -1,8 +1,8 @@
 package models;
 
-import har.Classes;
+import har.Labels;
 import har.Constants;
-import io.ReadData;
+import io.Database;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -44,14 +44,14 @@ public class BagOfWords extends Model {
     }
 
     @Override
-    public void train(TreeMap<Integer, Classes> trainSet) {
+    public void train(TreeMap<Integer, Labels> trainSet) {
         logger.println("Videos for Training: ");
         for (int videoNumber : trainSet.keySet()) {
             logger.println(videoNumber);
         }
         logger.println(Constants.LOGGER_SEPERATOR);
 
-        Matrix data = ReadData.readDataOfSomeVideos(trainSet.keySet());
+        Matrix data = Database.readDataOfSomeVideos(trainSet.keySet());
 
         long now = System.currentTimeMillis();
         PCA pca = new PCA(data, DIMENSION);
@@ -89,11 +89,11 @@ public class BagOfWords extends Model {
     }
 
     private Matrix convertVideoToBagOfWords(int videoNumber) {
-        Object[] o = ReadData.getClassAndVideoNumber(videoNumber);
-        Classes c = (Classes) o[0];
+        Object[] o = Database.getClassAndVideoNumber(videoNumber);
+        Labels c = (Labels) o[0];
         videoNumber = (int) o[1];
         try {
-            Matrix videoGradientData = ReadData.readGradientDataOfAVideo(c,
+            Matrix videoGradientData = Database.readGradientDataOfAVideo(c,
                     videoNumber);
             return convertVideoToBagOfWords(videoGradientData);
         } catch (FileNotFoundException e) {
@@ -120,12 +120,12 @@ public class BagOfWords extends Model {
     }
 
     @Override
-    public Classes test(int videoNumber) {
-        Object[] o = ReadData.getClassAndVideoNumber(videoNumber);
-        Classes c = (Classes) o[0];
+    public Labels test(int videoNumber) {
+        Object[] o = Database.getClassAndVideoNumber(videoNumber);
+        Labels c = (Labels) o[0];
         videoNumber = (int) o[1];
         try {
-            Matrix videoGradientData = ReadData.readGradientDataOfAVideo(c,
+            Matrix videoGradientData = Database.readGradientDataOfAVideo(c,
                     videoNumber);
             return test(videoGradientData);
         } catch (FileNotFoundException e) {
@@ -136,7 +136,7 @@ public class BagOfWords extends Model {
         return null;
     }
 
-    public Classes test(Matrix videoGradientData) {
+    public Labels test(Matrix videoGradientData) {
         Matrix m = convertVideoToBagOfWords(videoGradientData);
         return svm.evaluate(m);
     }

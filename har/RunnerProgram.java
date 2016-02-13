@@ -1,6 +1,6 @@
 package har;
 
-import io.ReadData;
+import io.Database;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -10,6 +10,7 @@ import javax.swing.JOptionPane;
 
 import models.BagOfWords;
 import models.Model;
+import utils.ApprioriAll;
 import utils.KMeans;
 import utils.PCA;
 import Jama.Matrix;
@@ -22,33 +23,37 @@ public class RunnerProgram {
 
     static boolean visualizeFeaturesAndGradient = false;
     static boolean visualizeAllWords = false;
-    static Classes videoToVisualizeClass = Classes.BOXING;
+    static Labels videoToVisualizeClass = Labels.BOXING;
     static int videoNumberToVisualizeInClass = 1;
     static int wordNumberInVideoToVisualize = 6;
     static int frameToShow = 1;
 
-    static boolean trainTheModel = true;
+    static boolean trainTheModel = false;
     static boolean simpleEvaluation = false;
     static double trainPercent = 0.9;
 
-    static boolean leaveOneOutEvaluation = true;
+    static boolean leaveOneOutEvaluation = false;
 
     static boolean checkPCAWords = false;
 
     static boolean checkKMeans = false;
     static int kmeansCenterWordNumber = 478;
 
+    // I should check what is going on in my model.
+    // I call all of my works as postProcess.
+    static boolean postProcess = true;
+
     public static void main(String[] args) {
         if (extract_all_videos_gradient_data) {
-            ReadData.saveAllVideosGradientData();
+            Database.saveAllVideosGradientData();
         }
         if (simpleEvaluation) {
             // TreeMap<Integer, Classes>[] datasets = ReadData
             // .randomSelect(trainPercent);
-            TreeMap<Integer, Classes>[] datasets = ReadData
+            TreeMap<Integer, Labels>[] datasets = Database
                     .randomSelect(trainPercent);
-            TreeMap<Integer, Classes> trainSet = datasets[0];
-            TreeMap<Integer, Classes> testSet = datasets[1];
+            TreeMap<Integer, Labels> trainSet = datasets[0];
+            TreeMap<Integer, Labels> testSet = datasets[1];
             Model m = null;
             if (trainTheModel) {
                 m = new BagOfWords();
@@ -78,10 +83,10 @@ public class RunnerProgram {
             Matrix[] word;
             Matrix[] wordGradient;
             try {
-                word = ReadData.readAWordOfVideo(videoToVisualizeClass,
+                word = Database.readAWordOfVideo(videoToVisualizeClass,
                         videoNumberToVisualizeInClass,
                         wordNumberInVideoToVisualize);
-                wordGradient = ReadData.readGradientDataOfVideoWord(
+                wordGradient = Database.readGradientDataOfVideoWord(
                         videoToVisualizeClass, videoNumberToVisualizeInClass,
                         wordNumberInVideoToVisualize);
                 if (visualizeAllWords) {
@@ -98,7 +103,7 @@ public class RunnerProgram {
                     PCA pca = bagOfWords.getPCA();
                     Matrix videoGradient;
                     try {
-                        videoGradient = ReadData.readGradientDataOfAVideo(
+                        videoGradient = Database.readGradientDataOfAVideo(
                                 videoToVisualizeClass,
                                 videoNumberToVisualizeInClass);
                         Matrix videoGradientWord = videoGradient.getMatrix(
@@ -127,10 +132,10 @@ public class RunnerProgram {
                     .load("bagOfWords.model"));
             PCA pca = bagOfWords.getPCA();
             KMeans kMeans = bagOfWords.getKMeans();
-            for (Classes c : Classes.values()) {
+            for (Labels c : Labels.values()) {
                 for (int i = 1; i <= c.getNumberOfVideos(); i++) {
                     try {
-                        videoGradient = ReadData.readGradientDataOfAVideo(c, i);
+                        videoGradient = Database.readGradientDataOfAVideo(c, i);
                         for (int j = 0; j < 200; j++) {
                             Matrix videoGradientWord = videoGradient.getMatrix(
                                     j, j, 0, 1689);
@@ -141,8 +146,8 @@ public class RunnerProgram {
                             System.out.println("Class: " + c.getName()
                                     + " Video: " + i + " nearest: " + nearest);
                             if (nearest == kmeansCenterWordNumber) {
-                                word = ReadData.readAWordOfVideo(c, i, j + 1);
-                                wordGradient = ReadData
+                                word = Database.readAWordOfVideo(c, i, j + 1);
+                                wordGradient = Database
                                         .readGradientDataOfVideoWord(c, i,
                                                 j + 1);
                                 JOptionPane.showMessageDialog(null, "class: "
@@ -158,6 +163,39 @@ public class RunnerProgram {
                     }
                 }
             }
+        }
+        if (postProcess) {
+            BagOfWords bagOfWords = (BagOfWords) BagOfWords
+                    .load("logs/models/0.model");
+            Matrix postProcessData = new Matrix(599, 200);
+            int rowCounter = 0;
+            for (Labels label : Labels.values()) {
+                for (int videoNumber = 1; videoNumber <= label
+                        .getNumberOfVideos(); videoNumber++) {
+                    try {
+                        Matrix gradientFeatures = Database
+                                .readGradientDataOfAVideo(label, videoNumber);
+                        Matrix pCATransformedData = bagOfWords.getPCA()
+                                .transform(gradientFeatures);
+                        for (int i = 0; i < pCATransformedData
+                                .getRowDimension(); i++) {
+                            Matrix row = pCATransformedData
+                                    .getMatrix(i, i, 0, pCATransformedData
+                                            .getColumnDimension() - 1);
+                            int word = bagOfWords.getKMeans().findNearest(row);
+                            postProcessData.set(rowCounter, i, word);
+                            System.out.print(word);
+                            System.out.print(", ");
+                        }
+                        rowCounter++;
+                        System.out.println();
+                    } catch (IOException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                }
+            }
+//            ApprioriAll apprioirAll = new ApprioriAll(postProcessData);
         }
     }
 }
